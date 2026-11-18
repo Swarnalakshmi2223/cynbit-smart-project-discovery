@@ -39,6 +39,7 @@ export async function GET(
         projectGoal: lead.projectGoal,
         recommendedService: lead.recommendedService,
         status: lead.status,
+        priorityLevel: lead.priorityLevel,
         submittedAt: lead.createdAt,
       },
     });

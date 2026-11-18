@@ -35,7 +35,10 @@ export const leadSubmissionSchema = z.object({
     '51–200 employees',
     '200+ employees',
   ]),
-  website: z.string().url('Please enter a valid URL').optional().or(z.literal('')),
+  website: z.string().optional().or(z.literal('')).refine(
+    (val) => !val || val === '' || /^(https?:\/\/)/.test(val) || /^[\w-]+(\.[\w-]+)+/.test(val),
+    { message: 'Please enter a valid website URL' }
+  ),
   currentSystems: z.string().max(500).optional(),
 
   // Step 3
@@ -66,7 +69,7 @@ export const leadSubmissionSchema = z.object({
   // Step 5
   fullName: z.string().min(2, 'Full name must be at least 2 characters').max(100),
   email: z.string().email('Please enter a valid email address'),
-  phone: z.string().regex(/^[+]?[\d\s\-().]{10,15}$/, 'Please enter a valid phone number'),
+  phone: z.string().regex(/^[+]?[\d\s\-().]{7,20}$/, 'Please enter a valid phone number'),
   preferredContactMethod: z.enum(['Email', 'Phone', 'WhatsApp']),
   additionalMessage: z.string().max(1000).optional(),
   privacyConsent: z.boolean().refine(val => val === true, {

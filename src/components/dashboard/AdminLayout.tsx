@@ -5,7 +5,8 @@ import Link from 'next/link';
 import { useRouter, usePathname } from 'next/navigation';
 import {
   Sparkles, LayoutDashboard, Users, BarChart3, LogOut, Menu, X,
-  ChevronRight, Database, ExternalLink, Shield, Bell, CheckCircle2
+  ChevronRight, Database, ExternalLink, Shield, Bell, CheckCircle2,
+  AlertTriangle, ShieldAlert
 } from 'lucide-react';
 
 const NAV_ITEMS = [
@@ -19,6 +20,8 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
   const pathname = usePathname();
   const [admin, setAdmin] = useState<{ name: string; email: string; role?: string } | null>(null);
   const [sidebarOpen, setSidebarOpen] = useState(false);
+  const [showLogoutConfirm, setShowLogoutConfirm] = useState(false);
+  const [loggingOut, setLoggingOut] = useState(false);
 
   useEffect(() => {
     fetch('/api/auth/me')
@@ -30,9 +33,30 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
       .catch(() => router.push('/admin/login'));
   }, [router]);
 
-  async function handleLogout() {
-    await fetch('/api/auth/logout', { method: 'POST' });
-    router.push('/admin/login');
+  // Handle escape key to dismiss confirmation modal
+  useEffect(() => {
+    function handleKeyDown(e: KeyboardEvent) {
+      if (e.key === 'Escape' && showLogoutConfirm && !loggingOut) {
+        setShowLogoutConfirm(false);
+      }
+    }
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [showLogoutConfirm, loggingOut]);
+
+  function requestLogout() {
+    setSidebarOpen(false);
+    setShowLogoutConfirm(true);
+  }
+
+  async function confirmLogout() {
+    setLoggingOut(true);
+    try {
+      await fetch('/api/auth/logout', { method: 'POST' });
+      router.push('/admin/login');
+    } catch {
+      setLoggingOut(false);
+    }
   }
 
   if (!admin) {
@@ -145,8 +169,9 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
         </div>
 
         <button
-          onClick={handleLogout}
-          className="w-full flex items-center justify-center gap-2 py-2 px-3 rounded-lg bg-slate-900/80 hover:bg-rose-950/40 text-slate-400 hover:text-rose-300 border border-slate-800 hover:border-rose-900/60 text-xs font-semibold transition-all"
+          type="button"
+          onClick={requestLogout}
+          className="w-full flex items-center justify-center gap-2 py-2 px-3 rounded-lg bg-slate-900/80 hover:bg-rose-950/40 text-slate-400 hover:text-rose-300 border border-slate-800 hover:border-rose-900/60 text-xs font-semibold transition-all cursor-pointer"
         >
           <LogOut className="w-3.5 h-3.5" />
           <span>Sign Out Session</span>
@@ -156,7 +181,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
   );
 
   return (
-    <div className="min-h-screen bg-slate-950 text-slate-100 flex">
+    <div className="min-h-screen bg-slate-950 text-slate-100 flex relative">
       {/* Desktop Sidebar */}
       <aside className="hidden lg:flex lg:flex-col w-64 fixed inset-y-0 z-30 shadow-2xl">
         <SidebarContent />
@@ -213,6 +238,92 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
           {children}
         </main>
       </div>
+
+      {/* Logout Confirmation Modal */}
+      {showLogoutConfirm && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+          {/* Backdrop blur */}
+          <div
+            className="fixed inset-0 bg-slate-950/80 backdrop-blur-md transition-opacity animate-enter"
+            onClick={() => !loggingOut && setShowLogoutConfirm(false)}
+          />
+
+          {/* Modal Container */}
+          <div className="relative w-full max-w-md bg-slate-900/95 backdrop-blur-xl border border-slate-800 rounded-2xl shadow-2xl p-6 sm:p-7 overflow-hidden z-10 animate-enter before:absolute before:inset-x-0 before:top-0 before:h-[2px] before:bg-gradient-to-r before:from-transparent before:via-rose-500 before:to-transparent">
+            {/* Close 'X' button */}
+            <button
+              type="button"
+              disabled={loggingOut}
+              onClick={() => setShowLogoutConfirm(false)}
+              className="absolute top-4 right-4 p-1.5 rounded-lg text-slate-400 hover:text-white bg-slate-950 border border-slate-800 hover:border-slate-700 transition-colors disabled:opacity-50 cursor-pointer"
+            >
+              <X className="w-4 h-4" />
+            </button>
+
+            {/* Icon & Title */}
+            <div className="flex items-start gap-4 mb-4">
+              <div className="w-12 h-12 rounded-xl bg-rose-950/60 border border-rose-800/80 flex items-center justify-center text-rose-400 flex-shrink-0 shadow-lg shadow-rose-950/50">
+                <LogOut className="w-6 h-6 stroke-[2.2]" />
+              </div>
+              <div className="pt-0.5">
+                <h3 className="text-base font-bold text-white tracking-tight">
+                  Confirm Sign Out
+                </h3>
+                <p className="text-xs text-slate-400 mt-1 leading-relaxed">
+                  Are you sure you want to end your current administrative session?
+                </p>
+              </div>
+            </div>
+
+            {/* Active session dossier info */}
+            <div className="mb-6 p-3.5 rounded-xl bg-slate-950/80 border border-slate-800/80 flex items-center justify-between text-xs">
+              <div className="flex items-center gap-2.5 min-w-0">
+                <div className="w-8 h-8 rounded-lg bg-slate-900 border border-slate-700 flex items-center justify-center font-bold text-slate-200 text-xs flex-shrink-0">
+                  {admin.name.charAt(0)}
+                </div>
+                <div className="min-w-0">
+                  <p className="font-semibold text-white truncate">{admin.name}</p>
+                  <p className="text-[10px] text-slate-500 font-mono truncate">{admin.email}</p>
+                </div>
+              </div>
+              <span className="text-[9px] font-mono font-bold uppercase tracking-wider px-2 py-0.5 rounded bg-cyan-950 text-cyan-400 border border-cyan-800/60">
+                {admin.role || 'Admin'}
+              </span>
+            </div>
+
+            {/* Action Buttons */}
+            <div className="flex items-center justify-end gap-3">
+              <button
+                type="button"
+                disabled={loggingOut}
+                onClick={() => setShowLogoutConfirm(false)}
+                className="px-4 py-2.5 rounded-xl border border-slate-800 bg-slate-950/80 text-xs font-semibold text-slate-300 hover:text-white hover:bg-slate-800 transition-colors disabled:opacity-50 cursor-pointer"
+              >
+                Cancel
+              </button>
+
+              <button
+                type="button"
+                disabled={loggingOut}
+                onClick={confirmLogout}
+                className="px-5 py-2.5 rounded-xl bg-gradient-to-r from-rose-500 to-red-600 hover:from-rose-600 hover:to-red-700 text-white text-xs font-bold transition-all shadow-lg shadow-rose-950/50 flex items-center gap-2 disabled:opacity-50 cursor-pointer"
+              >
+                {loggingOut ? (
+                  <>
+                    <span className="w-3.5 h-3.5 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+                    <span>Signing Out...</span>
+                  </>
+                ) : (
+                  <>
+                    <LogOut className="w-3.5 h-3.5" />
+                    <span>Confirm Sign Out</span>
+                  </>
+                )}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

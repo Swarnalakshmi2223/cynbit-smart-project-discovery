@@ -1,5 +1,9 @@
 // scripts/seed-admin.ts
 // Secure seed script to create initial administrator in MongoDB
+import * as dotenv from 'dotenv';
+dotenv.config({ path: '.env.local' });
+dotenv.config();
+
 import mongoose from 'mongoose';
 import bcrypt from 'bcryptjs';
 

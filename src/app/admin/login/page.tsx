@@ -42,14 +42,6 @@ export default function AdminLoginPage() {
     }
   }
 
-  function fillDemoCredentials() {
-    setForm({
-      email: 'admin@cynbit.in',
-      password: 'AdminSecure2026!',
-    });
-    setError('');
-  }
-
   return (
     <div className="min-h-screen bg-slate-950 flex flex-col justify-between p-4 sm:p-6 relative overflow-hidden select-none">
       {/* Ambient background glows */}
@@ -84,7 +76,7 @@ export default function AdminLoginPage() {
             Administrator Gateway
           </h1>
           <p className="text-xs text-slate-400 mt-1 max-w-xs mx-auto">
-            Authorized session authentication for the Cynbit Lead Qualification System.
+            Sign in to access the Cynbit Lead Qualification System.
           </p>
         </div>
 
@@ -152,29 +144,17 @@ export default function AdminLoginPage() {
               {loading ? (
                 <>
                   <span className="w-4 h-4 border-2 border-slate-950/30 border-t-slate-950 rounded-full animate-spin" />
-                  <span>Validating Credentials...</span>
+                  <span>Signing In...</span>
                 </>
               ) : (
                 <>
                   <KeyRound className="w-4 h-4" />
-                  <span>Authenticate Session</span>
+                  <span>Sign In</span>
                   <ArrowRight className="w-4 h-4" />
                 </>
               )}
             </button>
           </form>
-
-          {/* Quick Demo Credentials Helper */}
-          <div className="pt-4 border-t border-slate-800/80">
-            <button
-              type="button"
-              onClick={fillDemoCredentials}
-              className="w-full py-2 px-3 rounded-xl bg-slate-950/60 hover:bg-slate-950 text-slate-400 hover:text-cyan-400 border border-slate-800 hover:border-cyan-500/30 text-[11px] font-mono transition-all flex items-center justify-center gap-1.5"
-            >
-              <Sparkles className="w-3.5 h-3.5 text-cyan-400" />
-              <span>Fill Default Demo Credentials</span>
-            </button>
-          </div>
         </div>
       </div>
 

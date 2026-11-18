@@ -5,6 +5,16 @@ An end-to-end full-stack prototype developed for the **Full Stack Developer Inte
 
 ---
 
+> [!IMPORTANT]
+> ### 🔑 Default Administrative Credentials
+> Access the Admin CRM & Analytics Portal at: **[`http://localhost:3000/admin/login`](http://localhost:3000/admin/login)**
+>
+> | Role | Email Address | Password |
+> |---|---|---|
+> | **Superadmin** | `admin@cynbit.in` | `AdminSecure2026!` |
+
+---
+
 ## 🚀 Overview
 
 Cynbit Smart Discovery bridges the gap between potential clients exploring Cynbit's digital services and the Cynbit team. Instead of a generic contact form, visitors go through an intelligent 5-step guided project discovery journey that:

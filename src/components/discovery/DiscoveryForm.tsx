@@ -79,7 +79,7 @@ export default function DiscoveryForm() {
       if (!formData.email.trim() || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email)) {
         errors.email = 'Please provide a valid corporate or personal email address.';
       }
-      if (!formData.phone.trim() || !/^[+]?[\d\s\-().]{10,15}$/.test(formData.phone)) {
+      if (!formData.phone.trim() || !/^[+]?[\d\s\-().]{7,20}$/.test(formData.phone)) {
         errors.phone = 'Please provide a valid direct phone number.';
       }
       if (!formData.preferredContactMethod) {
