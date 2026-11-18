@@ -1,5 +1,4 @@
 'use client';
-// src/app/admin/leads/page.tsx — Lead management table
 
 import { useEffect, useState, useCallback, Suspense } from 'react';
 import { useSearchParams } from 'next/navigation';
@@ -7,10 +6,28 @@ import Link from 'next/link';
 import AdminLayout from '@/components/dashboard/AdminLayout';
 import { Lead, LeadStatus, PriorityLevel } from '@/types';
 import { STATUS_COLORS, PRIORITY_COLORS, LEAD_STATUSES, RECOMMENDED_SERVICES } from '@/constants';
-import { Search, ChevronLeft, ChevronRight, ExternalLink, Filter } from 'lucide-react';
+import {
+  Search, ChevronLeft, ChevronRight, ExternalLink, Filter,
+  RefreshCw, Users, ShieldAlert, ArrowUpRight, X, Clock
+} from 'lucide-react';
 import { formatDate } from '@/lib/utils';
 
 export const dynamic = 'force-dynamic';
+
+const STATUS_CHIPS: Record<LeadStatus, string> = {
+  New: 'bg-blue-500/15 text-blue-400 border-blue-500/30',
+  'Under Review': 'bg-amber-500/15 text-amber-400 border-amber-500/30',
+  Contacted: 'bg-purple-500/15 text-purple-400 border-purple-500/30',
+  'In Progress': 'bg-cyan-500/15 text-cyan-400 border-cyan-500/30',
+  Completed: 'bg-emerald-500/15 text-emerald-400 border-emerald-500/30',
+  Rejected: 'bg-rose-500/15 text-rose-400 border-rose-500/30',
+};
+
+const PRIORITY_CHIPS: Record<string, string> = {
+  High: 'bg-rose-500/20 text-rose-300 border-rose-500/40',
+  Medium: 'bg-amber-500/20 text-amber-300 border-amber-500/40',
+  Low: 'bg-emerald-500/20 text-emerald-300 border-emerald-500/40',
+};
 
 function LeadsContent() {
   const sp = useSearchParams();
@@ -32,6 +49,7 @@ function LeadsContent() {
     if (service) params.set('service', service);
     params.set('page', String(page));
     params.set('limit', '10');
+
     try {
       const res = await fetch(`/api/admin/leads?${params}`);
       const json = await res.json();
@@ -44,7 +62,9 @@ function LeadsContent() {
     }
   }, [search, status, priority, service, page]);
 
-  useEffect(() => { fetchLeads(); }, [fetchLeads]);
+  useEffect(() => {
+    fetchLeads();
+  }, [fetchLeads]);
 
   function handleSearch(e: React.FormEvent) {
     e.preventDefault();
@@ -53,115 +73,205 @@ function LeadsContent() {
   }
 
   function resetFilters() {
-    setSearch(''); setStatus(''); setPriority(''); setService(''); setPage(1);
+    setSearch('');
+    setStatus('');
+    setPriority('');
+    setService('');
+    setPage(1);
   }
 
   return (
-    <div>
-      <div className="mb-6 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+    <div className="space-y-6 animate-enter">
+      {/* Top Heading */}
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
-          <h1 className="text-2xl font-bold text-[#1a1a2e]">Lead Management</h1>
-          <p className="text-gray-500 text-sm mt-1">{pagination.total} total enquiries</p>
+          <h1 className="text-2xl font-black text-white tracking-tight">
+            Enquiry Leads Registry
+          </h1>
+          <p className="text-xs text-slate-400 mt-1">
+            Displaying <span className="font-mono text-cyan-400 font-bold">{pagination.total}</span> total customer submissions across all stages.
+          </p>
         </div>
+
+        <button
+          onClick={() => fetchLeads()}
+          className="px-3.5 py-2 rounded-xl bg-slate-900 hover:bg-slate-800 text-slate-300 text-xs font-semibold border border-slate-800 flex items-center gap-1.5 self-start sm:self-auto transition-colors"
+        >
+          <RefreshCw className={`w-3.5 h-3.5 text-cyan-400 ${loading ? 'animate-spin' : ''}`} />
+          <span>Refresh Database</span>
+        </button>
       </div>
 
-      {/* Search + Filters */}
-      <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-4 mb-4">
-        <form onSubmit={handleSearch} className="flex gap-3 mb-4">
-          <div className="flex-1 relative">
-            <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
+      {/* Filter and Search Toolbar */}
+      <div className="p-4 rounded-2xl bg-slate-900/60 border border-slate-800/80 space-y-3">
+        <form onSubmit={handleSearch} className="flex gap-2">
+          <div className="relative flex-1">
+            <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-500" />
             <input
               type="text"
               value={search}
-              onChange={e => setSearch(e.target.value)}
-              placeholder="Search by name, email, company or reference ID..."
-              className="w-full border border-gray-300 rounded-xl pl-10 pr-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-[#0ea5e9]"
+              onChange={(e) => setSearch(e.target.value)}
+              placeholder="Search by client name, email, company, or reference ID..."
+              className="w-full rounded-xl bg-slate-950 border border-slate-800 pl-10 pr-4 py-2.5 text-xs text-white placeholder:text-slate-500 focus:outline-none focus:ring-2 focus:ring-cyan-500/20 focus:border-cyan-500"
             />
           </div>
-          <button type="submit" className="px-4 py-2.5 bg-[#1a1a2e] text-white rounded-xl text-sm font-semibold hover:bg-[#16213e] transition-colors">
+          <button
+            type="submit"
+            className="px-5 py-2.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-white text-xs font-bold transition-colors"
+          >
             Search
           </button>
         </form>
-        <div className="flex flex-wrap gap-3 items-center">
-          <Filter className="w-4 h-4 text-gray-400 flex-shrink-0" />
-          <select value={status} onChange={e => { setStatus(e.target.value); setPage(1); }} className="border border-gray-300 rounded-xl px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#0ea5e9]">
+
+        <div className="flex flex-wrap items-center gap-2 pt-1 border-t border-slate-800/60 text-xs">
+          <div className="flex items-center gap-1.5 text-slate-400 mr-2">
+            <Filter className="w-3.5 h-3.5 text-cyan-400" />
+            <span className="font-semibold text-[11px] uppercase tracking-wider">Filters:</span>
+          </div>
+
+          <select
+            value={status}
+            onChange={(e) => {
+              setStatus(e.target.value);
+              setPage(1);
+            }}
+            className="rounded-xl bg-slate-950 border border-slate-800 px-3 py-1.5 text-xs text-slate-200 focus:outline-none focus:border-cyan-500"
+          >
             <option value="">All Statuses</option>
-            {LEAD_STATUSES.map(s => <option key={s} value={s}>{s}</option>)}
+            {LEAD_STATUSES.map((s) => (
+              <option key={s} value={s}>
+                {s}
+              </option>
+            ))}
           </select>
-          <select value={priority} onChange={e => { setPriority(e.target.value); setPage(1); }} className="border border-gray-300 rounded-xl px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#0ea5e9]">
+
+          <select
+            value={priority}
+            onChange={(e) => {
+              setPriority(e.target.value);
+              setPage(1);
+            }}
+            className="rounded-xl bg-slate-950 border border-slate-800 px-3 py-1.5 text-xs text-slate-200 focus:outline-none focus:border-cyan-500"
+          >
             <option value="">All Priorities</option>
-            {(['High', 'Medium', 'Low'] as PriorityLevel[]).map(p => <option key={p} value={p}>{p}</option>)}
+            {(['High', 'Medium', 'Low'] as PriorityLevel[]).map((p) => (
+              <option key={p} value={p}>
+                {p} Priority
+              </option>
+            ))}
           </select>
-          <select value={service} onChange={e => { setService(e.target.value); setPage(1); }} className="border border-gray-300 rounded-xl px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#0ea5e9] max-w-48">
-            <option value="">All Services</option>
-            {RECOMMENDED_SERVICES.map(s => <option key={s} value={s}>{s}</option>)}
+
+          <select
+            value={service}
+            onChange={(e) => {
+              setService(e.target.value);
+              setPage(1);
+            }}
+            className="rounded-xl bg-slate-950 border border-slate-800 px-3 py-1.5 text-xs text-slate-200 focus:outline-none focus:border-cyan-500 max-w-xs"
+          >
+            <option value="">All Service Domains</option>
+            {RECOMMENDED_SERVICES.map((s) => (
+              <option key={s} value={s}>
+                {s}
+              </option>
+            ))}
           </select>
+
           {(search || status || priority || service) && (
-            <button onClick={resetFilters} className="text-xs text-red-500 hover:text-red-700 font-medium underline">
-              Reset Filters
+            <button
+              onClick={resetFilters}
+              className="flex items-center gap-1 text-[11px] text-rose-400 hover:text-rose-300 font-semibold ml-auto px-2 py-1 rounded-lg hover:bg-rose-950/40"
+            >
+              <X className="w-3.5 h-3.5" />
+              <span>Clear Filters</span>
             </button>
           )}
         </div>
       </div>
 
-      {/* Table */}
-      <div className="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden">
+      {/* Main Data Table */}
+      <div className="rounded-2xl bg-slate-900/60 border border-slate-800/80 shadow-xl overflow-hidden">
         {loading ? (
-          <div className="p-12 text-center">
-            <span className="w-6 h-6 border-2 border-gray-200 border-t-[#1a1a2e] rounded-full animate-spin inline-block" />
-            <p className="mt-3 text-sm text-gray-400">Loading leads...</p>
+          <div className="p-16 text-center text-slate-500 space-y-3">
+            <span className="w-6 h-6 border-2 border-slate-800 border-t-cyan-400 rounded-full animate-spin inline-block" />
+            <p className="text-xs font-mono">Querying MongoDB Atlas collection...</p>
           </div>
         ) : leads.length === 0 ? (
-          <div className="p-12 text-center">
-            <p className="text-gray-400 font-medium">No leads found</p>
-            <p className="text-sm text-gray-400 mt-1">Try adjusting your search or filters</p>
+          <div className="p-16 text-center space-y-2">
+            <p className="text-sm font-bold text-slate-300">No matching enquiries found</p>
+            <p className="text-xs text-slate-500">Try adjusting your keyword query or resetting filter presets.</p>
           </div>
         ) : (
           <div className="overflow-x-auto">
-            <table className="w-full text-sm">
+            <table className="w-full text-left border-collapse text-xs">
               <thead>
-                <tr className="border-b border-gray-100 bg-gray-50">
-                  <th className="text-left px-4 py-3 text-xs font-semibold text-gray-500 uppercase tracking-wider">Reference</th>
-                  <th className="text-left px-4 py-3 text-xs font-semibold text-gray-500 uppercase tracking-wider">Customer</th>
-                  <th className="text-left px-4 py-3 text-xs font-semibold text-gray-500 uppercase tracking-wider hidden lg:table-cell">Company</th>
-                  <th className="text-left px-4 py-3 text-xs font-semibold text-gray-500 uppercase tracking-wider hidden xl:table-cell">Budget</th>
-                  <th className="text-left px-4 py-3 text-xs font-semibold text-gray-500 uppercase tracking-wider">Priority</th>
-                  <th className="text-left px-4 py-3 text-xs font-semibold text-gray-500 uppercase tracking-wider">Status</th>
-                  <th className="text-left px-4 py-3 text-xs font-semibold text-gray-500 uppercase tracking-wider hidden md:table-cell">Date</th>
-                  <th className="text-left px-4 py-3 text-xs font-semibold text-gray-500 uppercase tracking-wider">Action</th>
+                <tr className="border-b border-slate-800 bg-slate-950 text-slate-400 font-mono text-[11px] uppercase tracking-wider">
+                  <th className="py-3.5 px-4 font-bold">Reference Key</th>
+                  <th className="py-3.5 px-4 font-bold">Client / Contact</th>
+                  <th className="py-3.5 px-4 font-bold hidden lg:table-cell">Company</th>
+                  <th className="py-3.5 px-4 font-bold">Service Match</th>
+                  <th className="py-3.5 px-4 font-bold">Priority</th>
+                  <th className="py-3.5 px-4 font-bold">Stage</th>
+                  <th className="py-3.5 px-4 font-bold hidden md:table-cell">Logged Date</th>
+                  <th className="py-3.5 px-4 font-bold text-right">Action</th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-gray-50">
-                {leads.map(lead => (
-                  <tr key={lead._id} className="hover:bg-gray-50 transition-colors">
-                    <td className="px-4 py-3">
-                      <span className="font-mono text-xs font-bold text-[#0ea5e9]">{lead.referenceId}</span>
+              <tbody className="divide-y divide-slate-800/70">
+                {leads.map((lead) => (
+                  <tr
+                    key={lead._id}
+                    className="hover:bg-slate-800/40 transition-colors group"
+                  >
+                    <td className="py-3.5 px-4 font-mono font-bold text-cyan-400">
+                      {lead.referenceId}
                     </td>
-                    <td className="px-4 py-3">
-                      <p className="font-semibold text-[#1a1a2e]">{lead.fullName}</p>
-                      <p className="text-xs text-gray-400">{lead.email}</p>
+
+                    <td className="py-3.5 px-4">
+                      <div className="font-bold text-white leading-snug">{lead.fullName}</div>
+                      <div className="text-[11px] text-slate-400 font-normal">{lead.email}</div>
                     </td>
-                    <td className="px-4 py-3 hidden lg:table-cell text-gray-600">{lead.companyName}</td>
-                    <td className="px-4 py-3 hidden xl:table-cell text-gray-600 text-xs">{lead.budgetRange}</td>
-                    <td className="px-4 py-3">
-                      <span className={`px-2 py-0.5 rounded-full text-xs font-bold ${PRIORITY_COLORS[lead.priorityLevel]}`}>
+
+                    <td className="py-3.5 px-4 hidden lg:table-cell text-slate-300 font-medium">
+                      {lead.companyName}
+                    </td>
+
+                    <td className="py-3.5 px-4">
+                      <span className="text-[11px] font-semibold text-slate-300 line-clamp-1 max-w-[200px]" title={lead.recommendedService}>
+                        {lead.recommendedService}
+                      </span>
+                    </td>
+
+                    <td className="py-3.5 px-4">
+                      <span
+                        className={`text-[10px] font-mono font-bold px-2 py-0.5 rounded-full border ${
+                          PRIORITY_CHIPS[lead.priorityLevel] || 'bg-slate-800 text-slate-400'
+                        }`}
+                      >
                         {lead.priorityLevel}
                       </span>
                     </td>
-                    <td className="px-4 py-3">
-                      <span className={`px-2 py-0.5 rounded-full text-xs font-medium ${STATUS_COLORS[lead.status as LeadStatus]}`}>
+
+                    <td className="py-3.5 px-4">
+                      <span
+                        className={`text-[10px] font-mono font-bold px-2 py-0.5 rounded-full border ${
+                          STATUS_CHIPS[lead.status as LeadStatus] || 'bg-slate-800 text-slate-400'
+                        }`}
+                      >
                         {lead.status}
                       </span>
                     </td>
-                    <td className="px-4 py-3 hidden md:table-cell text-xs text-gray-400">
+
+                    <td className="py-3.5 px-4 hidden md:table-cell text-slate-400 font-mono text-[11px]">
                       {formatDate(lead.createdAt)}
                     </td>
-                    <td className="px-4 py-3">
+
+                    <td className="py-3.5 px-4 text-right">
                       <Link
                         href={`/admin/leads/${lead._id}`}
-                        className="inline-flex items-center gap-1 text-xs font-semibold text-[#0ea5e9] hover:text-[#0284c7]"
+                        className="inline-flex items-center gap-1 px-3 py-1.5 rounded-lg bg-slate-800 group-hover:bg-cyan-500/20 text-slate-300 group-hover:text-cyan-300 border border-slate-700 group-hover:border-cyan-500/40 text-[11px] font-bold transition-all"
                       >
-                        View <ExternalLink className="w-3 h-3" />
+                        <span>Dossier</span>
+                        <ArrowUpRight className="w-3 h-3" />
                       </Link>
                     </td>
                   </tr>
@@ -171,27 +281,32 @@ function LeadsContent() {
           </div>
         )}
 
-        {/* Pagination */}
+        {/* Pagination Bar */}
         {!loading && pagination.totalPages > 1 && (
-          <div className="border-t border-gray-100 px-4 py-3 flex items-center justify-between">
-            <p className="text-xs text-gray-400">
-              Showing {((page - 1) * 10) + 1}–{Math.min(page * 10, pagination.total)} of {pagination.total}
-            </p>
-            <div className="flex gap-2">
+          <div className="p-4 border-t border-slate-800 flex items-center justify-between text-xs text-slate-400 font-medium">
+            <span>
+              Showing {((page - 1) * 10) + 1}–{Math.min(page * 10, pagination.total)} of {pagination.total} leads
+            </span>
+
+            <div className="flex items-center gap-1.5">
               <button
-                onClick={() => setPage(p => p - 1)}
+                onClick={() => setPage((p) => p - 1)}
                 disabled={page === 1}
-                className="p-1.5 rounded-lg border border-gray-200 disabled:opacity-40 hover:bg-gray-50"
+                className="p-1.5 rounded-lg border border-slate-800 hover:bg-slate-800 disabled:opacity-30 disabled:cursor-not-allowed"
               >
-                <ChevronLeft className="w-4 h-4" />
+                <ChevronLeft className="w-4 h-4 text-slate-300" />
               </button>
-              <span className="px-3 py-1.5 text-sm font-medium">{page}/{pagination.totalPages}</span>
+
+              <span className="px-3 py-1 rounded-lg bg-slate-950 border border-slate-800 font-mono text-cyan-400 font-bold">
+                {page} / {pagination.totalPages}
+              </span>
+
               <button
-                onClick={() => setPage(p => p + 1)}
+                onClick={() => setPage((p) => p + 1)}
                 disabled={page === pagination.totalPages}
-                className="p-1.5 rounded-lg border border-gray-200 disabled:opacity-40 hover:bg-gray-50"
+                className="p-1.5 rounded-lg border border-slate-800 hover:bg-slate-800 disabled:opacity-30 disabled:cursor-not-allowed"
               >
-                <ChevronRight className="w-4 h-4" />
+                <ChevronRight className="w-4 h-4 text-slate-300" />
               </button>
             </div>
           </div>
@@ -204,7 +319,7 @@ function LeadsContent() {
 export default function LeadsPage() {
   return (
     <AdminLayout>
-      <Suspense fallback={<div className="p-12 text-center text-sm text-gray-400">Loading leads table...</div>}>
+      <Suspense fallback={<div className="p-12 text-center text-xs font-mono text-slate-500">Loading pipeline...</div>}>
         <LeadsContent />
       </Suspense>
     </AdminLayout>
