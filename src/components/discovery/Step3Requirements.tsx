@@ -1,5 +1,7 @@
-// src/components/discovery/Step3Requirements.tsx
+'use client';
+
 import { DiscoveryFormData } from '@/types';
+import { FileText, Sparkles, AlertCircle, CheckCircle2 } from 'lucide-react';
 
 interface Props {
   data: DiscoveryFormData;
@@ -7,91 +9,107 @@ interface Props {
   errors: Record<string, string>;
 }
 
-function Label({ htmlFor, required, children }: { htmlFor: string; required?: boolean; children: React.ReactNode }) {
-  return (
-    <label htmlFor={htmlFor} className="block text-sm font-semibold text-[#1a1a2e] mb-1.5">
-      {children} {required && <span className="text-red-500">*</span>}
-    </label>
-  );
-}
-
 export default function Step3Requirements({ data, onChange, errors }: Props) {
-  const inputClass = (err?: string) =>
-    `w-full border ${err ? 'border-red-400' : 'border-gray-300'} rounded-xl px-4 py-3 text-sm text-gray-800 focus:outline-none focus:ring-2 focus:ring-[#0ea5e9] focus:border-transparent transition resize-none`;
+  const charCount = data.projectDescription?.length || 0;
+  const isSatisfied = charCount >= 50;
 
   return (
     <div className="space-y-5">
-      {/* Project description */}
+      <div className="mb-2">
+        <h3 className="text-lg font-bold text-slate-900">Define your project requirements</h3>
+        <p className="text-xs text-slate-500 mt-0.5">
+          Describe the core problem statement, required functionalities, and target user personas.
+        </p>
+      </div>
+
+      {/* Primary Project Description */}
       <div>
-        <Label htmlFor="projectDescription" required>Project Description</Label>
+        <div className="flex items-center justify-between mb-1.5">
+          <label className="text-xs font-bold uppercase tracking-wider text-slate-700 flex items-center gap-1.5">
+            <FileText className="w-3.5 h-3.5 text-slate-500" />
+            <span>Project Scope & Vision</span>
+            <span className="text-cyan-600">*</span>
+          </label>
+
+          <span
+            className={`text-[11px] font-mono font-semibold flex items-center gap-1 ${
+              isSatisfied ? 'text-emerald-600' : 'text-slate-400'
+            }`}
+          >
+            {isSatisfied ? (
+              <>
+                <CheckCircle2 className="w-3 h-3 text-emerald-500" />
+                <span>{charCount} / 2000 chars</span>
+              </>
+            ) : (
+              <span>{charCount} / 50 min chars</span>
+            )}
+          </span>
+        </div>
+
         <textarea
-          id="projectDescription"
           rows={4}
           value={data.projectDescription}
-          onChange={e => onChange('projectDescription', e.target.value)}
-          placeholder="Describe your project in detail. What problem are you solving? What do you want to build? Who are the end users?"
-          className={inputClass(errors.projectDescription)}
+          onChange={(e) => onChange('projectDescription', e.target.value)}
+          placeholder="Describe your initiative in detail. What is the business challenge? What are the key features needed? What does success look like for your team?"
+          className={`w-full rounded-xl border p-3.5 text-sm bg-white text-slate-900 placeholder:text-slate-400 leading-relaxed transition-all focus:outline-none focus:ring-2 focus:ring-cyan-500/20 focus:border-cyan-500 resize-none ${
+            errors.projectDescription ? 'border-rose-400 bg-rose-50/20' : 'border-slate-200'
+          }`}
         />
-        <div className="flex justify-between mt-1">
-          {errors.projectDescription
-            ? <p className="text-xs text-red-600">{errors.projectDescription}</p>
-            : <span className="text-xs text-gray-400">Minimum 50 characters</span>}
-          <span className="text-xs text-gray-400">{data.projectDescription.length}/2000</span>
-        </div>
+
+        {errors.projectDescription && (
+          <p className="mt-1 text-xs text-rose-600 flex items-center gap-1 font-medium">
+            <AlertCircle className="w-3 h-3" /> {errors.projectDescription}
+          </p>
+        )}
       </div>
 
-      {/* Required features */}
+      {/* Required Features */}
       <div>
-        <Label htmlFor="requiredFeatures">Required Features <span className="text-gray-400 font-normal">(optional)</span></Label>
-        <textarea
-          id="requiredFeatures"
-          rows={3}
-          value={data.requiredFeatures}
-          onChange={e => onChange('requiredFeatures', e.target.value)}
-          placeholder="List the key features you need (e.g., user authentication, payment gateway, real-time notifications, dashboard...)"
-          className={inputClass()}
-        />
-      </div>
-
-      {/* Current challenges */}
-      <div>
-        <Label htmlFor="currentChallenges">Current Challenges <span className="text-gray-400 font-normal">(optional)</span></Label>
-        <textarea
-          id="currentChallenges"
-          rows={2}
-          value={data.currentChallenges}
-          onChange={e => onChange('currentChallenges', e.target.value)}
-          placeholder="What problems or limitations are you currently facing?"
-          className={inputClass()}
-        />
-      </div>
-
-      {/* Expected outcome */}
-      <div>
-        <Label htmlFor="expectedOutcome">Expected Outcome <span className="text-gray-400 font-normal">(optional)</span></Label>
-        <textarea
-          id="expectedOutcome"
-          rows={2}
-          value={data.expectedOutcome}
-          onChange={e => onChange('expectedOutcome', e.target.value)}
-          placeholder="What does success look like for this project?"
-          className={inputClass()}
-        />
-      </div>
-
-      {/* Integration requirements */}
-      <div>
-        <Label htmlFor="integrationRequirements">Integration Requirements <span className="text-gray-400 font-normal">(optional)</span></Label>
+        <label className="block text-xs font-bold uppercase tracking-wider text-slate-700 mb-1.5 flex items-center justify-between">
+          <span>Key Specific Features</span>
+          <span className="text-[10px] text-slate-400 font-normal lowercase tracking-normal">optional</span>
+        </label>
         <input
-          id="integrationRequirements"
           type="text"
-          value={data.integrationRequirements}
-          onChange={e => onChange('integrationRequirements', e.target.value)}
-          placeholder="e.g., CRM integration, payment gateway, third-party APIs..."
-          className={`w-full border border-gray-300 rounded-xl px-4 py-3 text-sm text-gray-800 focus:outline-none focus:ring-2 focus:ring-[#0ea5e9] focus:border-transparent transition`}
+          value={data.requiredFeatures}
+          onChange={(e) => onChange('requiredFeatures', e.target.value)}
+          placeholder="e.g. Multi-tenant auth, Stripe billing, LLM chatbot, dashboard reports..."
+          className="w-full rounded-xl border border-slate-200 px-3.5 py-2.5 text-sm bg-white text-slate-900 placeholder:text-slate-400 transition-all focus:outline-none focus:ring-2 focus:ring-cyan-500/20 focus:border-cyan-500"
         />
+      </div>
+
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+        {/* Current Challenges */}
+        <div>
+          <label className="block text-xs font-bold uppercase tracking-wider text-slate-700 mb-1.5 flex items-center justify-between">
+            <span>Primary Bottlenecks</span>
+            <span className="text-[10px] text-slate-400 font-normal lowercase tracking-normal">optional</span>
+          </label>
+          <input
+            type="text"
+            value={data.currentChallenges}
+            onChange={(e) => onChange('currentChallenges', e.target.value)}
+            placeholder="e.g. High manual overhead, slow load times..."
+            className="w-full rounded-xl border border-slate-200 px-3.5 py-2.5 text-sm bg-white text-slate-900 placeholder:text-slate-400 transition-all focus:outline-none focus:ring-2 focus:ring-cyan-500/20 focus:border-cyan-500"
+          />
+        </div>
+
+        {/* Expected Outcome */}
+        <div>
+          <label className="block text-xs font-bold uppercase tracking-wider text-slate-700 mb-1.5 flex items-center justify-between">
+            <span>Target Business Outcome</span>
+            <span className="text-[10px] text-slate-400 font-normal lowercase tracking-normal">optional</span>
+          </label>
+          <input
+            type="text"
+            value={data.expectedOutcome}
+            onChange={(e) => onChange('expectedOutcome', e.target.value)}
+            placeholder="e.g. Launch MVP in 60 days, automate triage..."
+            className="w-full rounded-xl border border-slate-200 px-3.5 py-2.5 text-sm bg-white text-slate-900 placeholder:text-slate-400 transition-all focus:outline-none focus:ring-2 focus:ring-cyan-500/20 focus:border-cyan-500"
+          />
+        </div>
       </div>
     </div>
   );
 }
-

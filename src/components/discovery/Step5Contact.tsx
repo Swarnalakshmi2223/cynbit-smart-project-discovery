@@ -1,6 +1,8 @@
-// src/components/discovery/Step5Contact.tsx
+'use client';
+
 import { DiscoveryFormData, PreferredContactMethod } from '@/types';
 import { PREFERRED_CONTACT_METHODS } from '@/constants';
+import { User, Mail, Phone, MessageSquare, ShieldCheck, AlertCircle } from 'lucide-react';
 
 interface Props {
   data: DiscoveryFormData;
@@ -8,124 +10,159 @@ interface Props {
   errors: Record<string, string>;
 }
 
-function Label({ htmlFor, required, children }: { htmlFor: string; required?: boolean; children: React.ReactNode }) {
-  return (
-    <label htmlFor={htmlFor} className="block text-sm font-semibold text-[#1a1a2e] mb-1.5">
-      {children} {required && <span className="text-red-500">*</span>}
-    </label>
-  );
-}
-
 export default function Step5Contact({ data, onChange, errors }: Props) {
-  const inputClass = (err?: string) =>
-    `w-full border ${err ? 'border-red-400' : 'border-gray-300'} rounded-xl px-4 py-3 text-sm text-gray-800 focus:outline-none focus:ring-2 focus:ring-[#0ea5e9] focus:border-transparent transition`;
-
   return (
     <div className="space-y-5">
-      {/* Full name */}
-      <div>
-        <Label htmlFor="fullName" required>Full Name</Label>
-        <input
-          id="fullName"
-          type="text"
-          autoComplete="name"
-          value={data.fullName}
-          onChange={e => onChange('fullName', e.target.value)}
-          placeholder="Your full name"
-          className={inputClass(errors.fullName)}
-        />
-        {errors.fullName && <p className="mt-1 text-xs text-red-600">{errors.fullName}</p>}
+      <div className="mb-2">
+        <h3 className="text-lg font-bold text-slate-900">Where should we deliver your project dossier?</h3>
+        <p className="text-xs text-slate-500 mt-0.5">
+          We will send your unique reference code and assigned engineering team contact here.
+        </p>
       </div>
 
-      <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
+      {/* Full Name */}
+      <div>
+        <label className="block text-xs font-bold uppercase tracking-wider text-slate-700 mb-1.5 flex items-center gap-1.5">
+          <User className="w-3.5 h-3.5 text-slate-500" />
+          <span>Full Name</span>
+          <span className="text-cyan-600">*</span>
+        </label>
+        <input
+          type="text"
+          value={data.fullName}
+          onChange={(e) => onChange('fullName', e.target.value)}
+          placeholder="e.g. Swarna Lakshmi"
+          className={`w-full rounded-xl border px-3.5 py-2.5 text-sm bg-white text-slate-900 placeholder:text-slate-400 transition-all focus:outline-none focus:ring-2 focus:ring-cyan-500/20 focus:border-cyan-500 ${
+            errors.fullName ? 'border-rose-400 bg-rose-50/20' : 'border-slate-200'
+          }`}
+        />
+        {errors.fullName && (
+          <p className="mt-1 text-xs text-rose-600 flex items-center gap-1 font-medium">
+            <AlertCircle className="w-3 h-3" /> {errors.fullName}
+          </p>
+        )}
+      </div>
+
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
         {/* Email */}
         <div>
-          <Label htmlFor="email" required>Business Email</Label>
+          <label className="block text-xs font-bold uppercase tracking-wider text-slate-700 mb-1.5 flex items-center gap-1.5">
+            <Mail className="w-3.5 h-3.5 text-slate-500" />
+            <span>Work Email</span>
+            <span className="text-cyan-600">*</span>
+          </label>
           <input
-            id="email"
             type="email"
-            autoComplete="email"
             value={data.email}
-            onChange={e => onChange('email', e.target.value)}
+            onChange={(e) => onChange('email', e.target.value)}
             placeholder="you@company.com"
-            className={inputClass(errors.email)}
+            className={`w-full rounded-xl border px-3.5 py-2.5 text-sm bg-white text-slate-900 placeholder:text-slate-400 transition-all focus:outline-none focus:ring-2 focus:ring-cyan-500/20 focus:border-cyan-500 ${
+              errors.email ? 'border-rose-400 bg-rose-50/20' : 'border-slate-200'
+            }`}
           />
-          {errors.email && <p className="mt-1 text-xs text-red-600">{errors.email}</p>}
+          {errors.email && (
+            <p className="mt-1 text-xs text-rose-600 flex items-center gap-1 font-medium">
+              <AlertCircle className="w-3 h-3" /> {errors.email}
+            </p>
+          )}
         </div>
 
         {/* Phone */}
         <div>
-          <Label htmlFor="phone" required>Phone Number</Label>
+          <label className="block text-xs font-bold uppercase tracking-wider text-slate-700 mb-1.5 flex items-center gap-1.5">
+            <Phone className="w-3.5 h-3.5 text-slate-500" />
+            <span>Direct Phone / Mobile</span>
+            <span className="text-cyan-600">*</span>
+          </label>
           <input
-            id="phone"
             type="tel"
-            autoComplete="tel"
             value={data.phone}
-            onChange={e => onChange('phone', e.target.value)}
+            onChange={(e) => onChange('phone', e.target.value)}
             placeholder="+91 98765 43210"
-            className={inputClass(errors.phone)}
+            className={`w-full rounded-xl border px-3.5 py-2.5 text-sm bg-white text-slate-900 placeholder:text-slate-400 transition-all focus:outline-none focus:ring-2 focus:ring-cyan-500/20 focus:border-cyan-500 ${
+              errors.phone ? 'border-rose-400 bg-rose-50/20' : 'border-slate-200'
+            }`}
           />
-          {errors.phone && <p className="mt-1 text-xs text-red-600">{errors.phone}</p>}
+          {errors.phone && (
+            <p className="mt-1 text-xs text-rose-600 flex items-center gap-1 font-medium">
+              <AlertCircle className="w-3 h-3" /> {errors.phone}
+            </p>
+          )}
         </div>
       </div>
 
-      {/* Preferred contact */}
+      {/* Preferred Contact Method */}
       <div>
-        <Label htmlFor="preferredContactMethod" required>Preferred Contact Method</Label>
-        <div className="flex gap-3">
-          {PREFERRED_CONTACT_METHODS.map(method => (
-            <button
-              key={method}
-              type="button"
-              onClick={() => onChange('preferredContactMethod', method as PreferredContactMethod)}
-              className={`flex-1 py-2.5 rounded-xl border-2 text-sm font-medium transition-all ${
-                data.preferredContactMethod === method
-                  ? 'border-[#0ea5e9] bg-[#f0f9ff] text-[#0ea5e9]'
-                  : 'border-gray-200 text-gray-600 hover:border-gray-300'
-              }`}
-            >
-              {method}
-            </button>
-          ))}
+        <label className="text-xs font-bold uppercase tracking-wider text-slate-700 mb-2 block flex items-center gap-1.5">
+          <MessageSquare className="w-3.5 h-3.5 text-slate-500" />
+          <span>Preferred Communication Channel</span>
+          <span className="text-cyan-600">*</span>
+        </label>
+        <div className="grid grid-cols-3 gap-2.5">
+          {PREFERRED_CONTACT_METHODS.map((method) => {
+            const isSelected = data.preferredContactMethod === method;
+            return (
+              <button
+                key={method}
+                type="button"
+                onClick={() => onChange('preferredContactMethod', method as PreferredContactMethod)}
+                className={`py-2 px-3 rounded-xl text-xs font-semibold border transition-all text-center ${
+                  isSelected
+                    ? 'border-cyan-500 bg-cyan-50/60 text-cyan-900 ring-1 ring-cyan-500 font-bold'
+                    : 'border-slate-200 bg-white text-slate-600 hover:border-slate-300'
+                }`}
+              >
+                {method}
+              </button>
+            );
+          })}
         </div>
-        {errors.preferredContactMethod && <p className="mt-1 text-xs text-red-600">{errors.preferredContactMethod}</p>}
+        {errors.preferredContactMethod && (
+          <p className="mt-1 text-xs text-rose-600 flex items-center gap-1 font-medium">
+            <AlertCircle className="w-3 h-3" /> {errors.preferredContactMethod}
+          </p>
+        )}
       </div>
 
-      {/* Additional message */}
+      {/* Additional Message */}
       <div>
-        <Label htmlFor="additionalMessage">Additional Message <span className="text-gray-400 font-normal">(optional)</span></Label>
+        <label className="block text-xs font-bold uppercase tracking-wider text-slate-700 mb-1.5 flex items-center justify-between">
+          <span>Additional Comments / Scheduling Notes</span>
+          <span className="text-[10px] text-slate-400 font-normal lowercase tracking-normal">optional</span>
+        </label>
         <textarea
-          id="additionalMessage"
-          rows={3}
+          rows={2}
           value={data.additionalMessage}
-          onChange={e => onChange('additionalMessage', e.target.value)}
-          placeholder="Any other information you'd like us to know..."
-          className={`w-full border border-gray-300 rounded-xl px-4 py-3 text-sm text-gray-800 focus:outline-none focus:ring-2 focus:ring-[#0ea5e9] focus:border-transparent transition resize-none`}
+          onChange={(e) => onChange('additionalMessage', e.target.value)}
+          placeholder="Any specific dates for a discovery call or NDA requirements..."
+          className="w-full rounded-xl border border-slate-200 p-3 text-sm bg-white text-slate-900 placeholder:text-slate-400 transition-all focus:outline-none focus:ring-2 focus:ring-cyan-500/20 focus:border-cyan-500 resize-none"
         />
       </div>
 
-      {/* Privacy consent */}
-      <div className="bg-gray-50 rounded-xl p-4">
+      {/* Privacy Consent */}
+      <div className="p-3.5 rounded-xl bg-slate-50 border border-slate-200">
         <label className="flex items-start gap-3 cursor-pointer">
           <input
             type="checkbox"
             checked={data.privacyConsent}
-            onChange={e => onChange('privacyConsent', e.target.checked)}
-            className="mt-0.5 h-4 w-4 text-[#0ea5e9] border-gray-300 rounded focus:ring-[#0ea5e9]"
+            onChange={(e) => onChange('privacyConsent', e.target.checked)}
+            className="mt-0.5 h-4 w-4 rounded border-slate-300 text-cyan-600 focus:ring-cyan-500"
           />
-          <span className="text-sm text-gray-600 leading-relaxed">
+          <span className="text-xs text-slate-600 leading-relaxed font-normal">
             I agree to the{' '}
-            <a href="https://www.cynbit.in" target="_blank" rel="noopener noreferrer" className="text-[#0ea5e9] underline">
+            <a href="https://www.cynbit.in" target="_blank" rel="noopener noreferrer" className="text-cyan-700 font-bold underline">
               privacy policy
             </a>{' '}
-            and consent to Cynbit Technologies contacting me regarding my project enquiry.
-            My information will be handled securely and not shared with third parties.
-            <span className="text-red-500"> *</span>
+            and consent to Cynbit Technologies contacting me regarding this project enquiry. Your information is protected under strict confidentiality and never shared with external parties.
+            <span className="text-cyan-600 font-bold"> *</span>
           </span>
         </label>
-        {errors.privacyConsent && <p className="mt-2 text-xs text-red-600">{errors.privacyConsent}</p>}
+        {errors.privacyConsent && (
+          <p className="mt-1.5 text-xs text-rose-600 flex items-center gap-1 font-medium">
+            <AlertCircle className="w-3 h-3" /> {errors.privacyConsent}
+          </p>
+        )}
       </div>
     </div>
   );
 }
-

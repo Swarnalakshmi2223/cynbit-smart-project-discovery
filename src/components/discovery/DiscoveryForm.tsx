@@ -1,6 +1,4 @@
 'use client';
-// src/components/discovery/DiscoveryForm.tsx
-// Main multi-step form component with full state management
 
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
@@ -14,6 +12,7 @@ import Step3Requirements from './Step3Requirements';
 import Step4Budget from './Step4Budget';
 import Step5Contact from './Step5Contact';
 import RecommendationCard from './RecommendationCard';
+import { ArrowLeft, ArrowRight, Sparkles, CheckCircle2, ShieldCheck, AlertCircle } from 'lucide-react';
 
 const INITIAL_FORM: DiscoveryFormData = {
   projectGoal: '',
@@ -48,39 +47,47 @@ export default function DiscoveryForm() {
   const [fieldErrors, setFieldErrors] = useState<Record<string, string>>({});
 
   function updateField<K extends keyof DiscoveryFormData>(key: K, value: DiscoveryFormData[K]) {
-    setFormData(prev => ({ ...prev, [key]: value }));
-    setFieldErrors(prev => { const n = { ...prev }; delete n[key]; return n; });
+    setFormData((prev) => ({ ...prev, [key]: value }));
+    setFieldErrors((prev) => {
+      const copy = { ...prev };
+      delete copy[key];
+      return copy;
+    });
   }
 
   function validateStep(s: number): boolean {
     const errors: Record<string, string> = {};
     if (s === 1) {
-      if (!formData.projectGoal) errors.projectGoal = 'Please select a project goal.';
+      if (!formData.projectGoal) errors.projectGoal = 'Please select your primary project goal.';
     }
     if (s === 2) {
-      if (!formData.industry) errors.industry = 'Please select your industry.';
-      if (!formData.companyName.trim()) errors.companyName = 'Company name is required.';
-      if (!formData.companySize) errors.companySize = 'Please select your company size.';
+      if (!formData.industry) errors.industry = 'Please select your industry category.';
+      if (!formData.companyName.trim()) errors.companyName = 'Company or project name is required.';
+      if (!formData.companySize) errors.companySize = 'Please specify your team or company size.';
     }
     if (s === 3) {
-      if (formData.projectDescription.trim().length < 50) {
-        errors.projectDescription = 'Please describe your project in at least 50 characters.';
+      if ((formData.projectDescription || '').trim().length < 50) {
+        errors.projectDescription = 'Please provide at least 50 characters describing your project requirements.';
       }
     }
     if (s === 4) {
-      if (!formData.budgetRange) errors.budgetRange = 'Please select a budget range.';
-      if (!formData.expectedTimeline) errors.expectedTimeline = 'Please select a timeline.';
+      if (!formData.budgetRange) errors.budgetRange = 'Please indicate your expected budget allocation.';
+      if (!formData.expectedTimeline) errors.expectedTimeline = 'Please indicate your required completion timeline.';
     }
     if (s === 5) {
-      if (!formData.fullName.trim()) errors.fullName = 'Full name is required.';
+      if (!formData.fullName.trim()) errors.fullName = 'Please enter your full name.';
       if (!formData.email.trim() || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email)) {
-        errors.email = 'Please enter a valid email address.';
+        errors.email = 'Please provide a valid corporate or personal email address.';
       }
       if (!formData.phone.trim() || !/^[+]?[\d\s\-().]{10,15}$/.test(formData.phone)) {
-        errors.phone = 'Please enter a valid phone number.';
+        errors.phone = 'Please provide a valid direct phone number.';
       }
-      if (!formData.preferredContactMethod) errors.preferredContactMethod = 'Please select a contact method.';
-      if (!formData.privacyConsent) errors.privacyConsent = 'You must agree to the privacy policy.';
+      if (!formData.preferredContactMethod) {
+        errors.preferredContactMethod = 'Please choose how our team should contact you.';
+      }
+      if (!formData.privacyConsent) {
+        errors.privacyConsent = 'You must review and agree to the privacy consent to proceed.';
+      }
     }
     setFieldErrors(errors);
     return Object.keys(errors).length === 0;
@@ -88,14 +95,15 @@ export default function DiscoveryForm() {
 
   function handleNext() {
     if (!validateStep(step)) return;
+
     if (step === 4) {
-      // Show recommendation between step 4 and 5
       const rec = computeRecommendation(formData);
       setRecommendation(rec);
       setShowRecommendation(true);
       return;
     }
-    setStep(s => s + 1);
+
+    setStep((s) => s + 1);
   }
 
   function handleBack() {
@@ -103,136 +111,174 @@ export default function DiscoveryForm() {
       setShowRecommendation(false);
       return;
     }
-    setStep(s => Math.max(1, s - 1));
+    setStep((s) => Math.max(1, s - 1));
   }
 
   async function handleSubmit() {
     if (!validateStep(5)) return;
     setSubmitting(true);
     setSubmitError('');
+
     try {
       const res = await fetch('/api/leads', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(formData),
       });
+
       const json = await res.json();
+
       if (!res.ok) {
         if (res.status === 409) {
-          setSubmitError(`An enquiry with this email was submitted recently. Reference ID: ${json.referenceId}`);
+          setSubmitError(`A recent enquiry with this email is already registered. Reference ID: ${json.referenceId}`);
         } else if (json.details) {
-          const serverErrors: Record<string, string> = {};
+          const sErrors: Record<string, string> = {};
           for (const [k, v] of Object.entries(json.details)) {
-            serverErrors[k] = Array.isArray(v) ? v[0] : String(v);
+            sErrors[k] = Array.isArray(v) ? v[0] : String(v);
           }
-          setFieldErrors(serverErrors);
-          setSubmitError('Please fix the errors above.');
+          setFieldErrors(sErrors);
+          setSubmitError('Please address the highlighted fields.');
         } else {
-          setSubmitError(json.error ?? 'Submission failed. Please try again.');
+          setSubmitError(json.error ?? 'Submission error. Please check your network and try again.');
         }
         return;
       }
+
       const { referenceId, recommendedService, emailStatus } = json.data;
       router.push(
-        `/success?ref=${encodeURIComponent(referenceId)}&goal=${encodeURIComponent(formData.projectGoal)}&service=${encodeURIComponent(recommendedService)}&email=${encodeURIComponent(emailStatus?.customerEmail ?? 'unknown')}`
+        `/success?ref=${encodeURIComponent(referenceId)}&goal=${encodeURIComponent(
+          formData.projectGoal
+        )}&service=${encodeURIComponent(recommendedService)}&email=${encodeURIComponent(
+          emailStatus?.customerEmail ?? 'unknown'
+        )}`
       );
     } catch {
-      setSubmitError('Network error. Please check your connection and try again.');
+      setSubmitError('Network failure occurred. Please retry.');
     } finally {
       setSubmitting(false);
     }
   }
 
-  const currentStep = showRecommendation ? null : FORM_STEPS[step - 1];
-
   return (
     <div className="max-w-2xl mx-auto">
-      {/* Progress */}
+      {/* Step Indicator */}
       {!showRecommendation && (
         <ProgressBar currentStep={step} totalSteps={FORM_STEPS.length} steps={FORM_STEPS} />
       )}
 
-      {/* Step header */}
-      {currentStep && (
-        <div className="mb-8">
-          <h2 className="text-2xl font-bold text-[#1a1a2e]">{currentStep.title}</h2>
-          <p className="text-gray-500 mt-1">{currentStep.description}</p>
-        </div>
-      )}
+      {/* Main Glass Form Card */}
+      <div className="bg-white rounded-2xl border border-slate-200/90 shadow-xl p-6 sm:p-9 relative">
+        {/* Recommendation Reveal Screen */}
+        {showRecommendation && recommendation ? (
+          <div className="space-y-6">
+            <RecommendationCard recommendation={recommendation} />
 
-      {/* Recommendation between step 4 and 5 */}
-      {showRecommendation && recommendation && (
-        <div className="animate-fadeIn">
-          <RecommendationCard recommendation={recommendation} />
-          <div className="flex justify-between mt-6">
-            <button
-              onClick={handleBack}
-              className="px-6 py-3 border border-gray-300 text-gray-700 rounded-xl font-medium hover:bg-gray-50 transition-colors"
-            >
-              ← Back
-            </button>
-            <button
-              onClick={() => { setShowRecommendation(false); setStep(5); }}
-              className="px-8 py-3 bg-[#1a1a2e] text-white rounded-xl font-semibold hover:bg-[#16213e] transition-colors"
-            >
-              Continue to Contact Details →
-            </button>
-          </div>
-        </div>
-      )}
+            <div className="flex items-center justify-between pt-6 border-t border-slate-100">
+              <button
+                type="button"
+                onClick={handleBack}
+                className="px-5 py-2.5 rounded-xl border border-slate-200 text-xs font-semibold text-slate-700 hover:bg-slate-50 transition-colors flex items-center gap-1.5"
+              >
+                <ArrowLeft className="w-4 h-4" />
+                <span>Adjust Parameters</span>
+              </button>
 
-      {/* Form steps */}
-      {!showRecommendation && (
-        <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-6 sm:p-8 animate-fadeIn">
-          {step === 1 && <Step1Goal value={formData.projectGoal} onChange={v => updateField('projectGoal', v)} error={fieldErrors.projectGoal} />}
-          {step === 2 && <Step2Business data={formData} onChange={updateField} errors={fieldErrors} />}
-          {step === 3 && <Step3Requirements data={formData} onChange={updateField} errors={fieldErrors} />}
-          {step === 4 && <Step4Budget data={formData} onChange={updateField} errors={fieldErrors} />}
-          {step === 5 && <Step5Contact data={formData} onChange={updateField} errors={fieldErrors} />}
-
-          {/* Error message */}
-          {submitError && (
-            <div className="mt-4 p-4 bg-red-50 border border-red-200 rounded-xl text-red-700 text-sm">
-              {submitError}
+              <button
+                type="button"
+                onClick={() => {
+                  setShowRecommendation(false);
+                  setStep(5);
+                }}
+                className="px-6 py-2.5 rounded-xl bg-slate-900 hover:bg-slate-800 text-white text-xs font-bold transition-all shadow-md flex items-center gap-2"
+              >
+                <span>Continue to Contact Dossier</span>
+                <ArrowRight className="w-4 h-4 text-cyan-400" />
+              </button>
             </div>
-          )}
-
-          {/* Navigation buttons */}
-          <div className="flex justify-between mt-8 pt-6 border-t border-gray-100">
-            <button
-              onClick={handleBack}
-              disabled={step === 1}
-              className="px-6 py-3 border border-gray-300 text-gray-700 rounded-xl font-medium hover:bg-gray-50 transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
-            >
-              ← Previous
-            </button>
-            {step < 5 ? (
-              <button
-                onClick={handleNext}
-                className="px-8 py-3 bg-[#1a1a2e] text-white rounded-xl font-semibold hover:bg-[#16213e] transition-colors"
-              >
-                Continue →
-              </button>
-            ) : (
-              <button
-                onClick={handleSubmit}
-                disabled={submitting}
-                className="px-8 py-3 bg-[#0ea5e9] text-white rounded-xl font-semibold hover:bg-[#0284c7] transition-colors disabled:opacity-60 disabled:cursor-not-allowed flex items-center gap-2"
-              >
-                {submitting ? (
-                  <>
-                    <span className="w-4 h-4 border-2 border-white/40 border-t-white rounded-full animate-spin" />
-                    Submitting...
-                  </>
-                ) : (
-                  'Submit Enquiry →'
-                )}
-              </button>
-            )}
           </div>
-        </div>
-      )}
+        ) : (
+          <div className="space-y-6">
+            {/* Step Components */}
+            {step === 1 && (
+              <Step1Goal
+                value={formData.projectGoal}
+                onChange={(v) => updateField('projectGoal', v)}
+                error={fieldErrors.projectGoal}
+              />
+            )}
+            {step === 2 && (
+              <Step2Business data={formData} onChange={updateField} errors={fieldErrors} />
+            )}
+            {step === 3 && (
+              <Step3Requirements data={formData} onChange={updateField} errors={fieldErrors} />
+            )}
+            {step === 4 && (
+              <Step4Budget data={formData} onChange={updateField} errors={fieldErrors} />
+            )}
+            {step === 5 && (
+              <Step5Contact data={formData} onChange={updateField} errors={fieldErrors} />
+            )}
+
+            {/* Error Banner */}
+            {submitError && (
+              <div className="p-3.5 rounded-xl bg-rose-50 border border-rose-200 text-rose-700 text-xs flex items-start gap-2 font-medium">
+                <AlertCircle className="w-4 h-4 text-rose-600 flex-shrink-0 mt-0.5" />
+                <span>{submitError}</span>
+              </div>
+            )}
+
+            {/* Bottom Actions */}
+            <div className="flex items-center justify-between pt-6 border-t border-slate-100">
+              <button
+                type="button"
+                onClick={handleBack}
+                disabled={step === 1}
+                className="px-5 py-2.5 rounded-xl border border-slate-200 text-xs font-semibold text-slate-700 hover:bg-slate-50 transition-colors disabled:opacity-30 disabled:cursor-not-allowed flex items-center gap-1.5"
+              >
+                <ArrowLeft className="w-4 h-4" />
+                <span>Previous</span>
+              </button>
+
+              {step < 5 ? (
+                <button
+                  type="button"
+                  onClick={handleNext}
+                  className="px-6 py-2.5 rounded-xl bg-slate-900 hover:bg-slate-800 text-white text-xs font-bold transition-all shadow-md flex items-center gap-2 group"
+                >
+                  <span>Continue</span>
+                  <ArrowRight className="w-4 h-4 text-cyan-400 group-hover:translate-x-0.5 transition-transform" />
+                </button>
+              ) : (
+                <button
+                  type="button"
+                  onClick={handleSubmit}
+                  disabled={submitting}
+                  className="px-7 py-3 rounded-xl bg-gradient-to-r from-cyan-500 to-sky-600 hover:from-cyan-400 hover:to-sky-500 text-slate-950 font-bold text-xs shadow-lg shadow-cyan-500/20 transition-all flex items-center gap-2 disabled:opacity-60 disabled:cursor-not-allowed"
+                >
+                  {submitting ? (
+                    <>
+                      <span className="w-4 h-4 border-2 border-slate-950/30 border-t-slate-950 rounded-full animate-spin" />
+                      <span>Transmitting Dossier...</span>
+                    </>
+                  ) : (
+                    <>
+                      <Sparkles className="w-4 h-4 text-slate-950" />
+                      <span>Submit Project Discovery</span>
+                      <ArrowRight className="w-4 h-4 text-slate-950" />
+                    </>
+                  )}
+                </button>
+              )}
+            </div>
+          </div>
+        )}
+      </div>
+
+      {/* Security note footer */}
+      <div className="mt-6 flex items-center justify-center gap-2 text-[11px] text-slate-400">
+        <ShieldCheck className="w-3.5 h-3.5 text-slate-400" />
+        <span>256-bit encrypted submission • Strict confidentiality guaranteed</span>
+      </div>
     </div>
   );
 }
-

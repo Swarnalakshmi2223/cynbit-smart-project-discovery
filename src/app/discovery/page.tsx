@@ -1,32 +1,44 @@
-// src/app/discovery/page.tsx
 import Navbar from '@/components/layout/Navbar';
 import DiscoveryForm from '@/components/discovery/DiscoveryForm';
+import Footer from '@/components/layout/Footer';
+import { Sparkles } from 'lucide-react';
 
 export const metadata = {
-  title: 'Start Your Project – Cynbit Smart Discovery',
-  description: 'Complete our intelligent project discovery form and receive a personalized service recommendation from Cynbit Technologies.',
+  title: 'Project Discovery Studio – Cynbit Technologies',
+  description:
+    'Complete our intelligent project discovery journey and receive an immediate architectural diagnosis and Cynbit squad match.',
 };
 
 export default function DiscoveryPage() {
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen flex flex-col bg-slate-50 selection:bg-cyan-500/20 selection:text-cyan-900">
       <Navbar />
-      <main className="pt-24 pb-16 px-4">
-        <div className="max-w-2xl mx-auto text-center mb-10">
-          <div className="inline-flex items-center gap-2 bg-[#1a1a2e] text-[#0ea5e9] text-xs font-semibold px-3 py-1.5 rounded-full mb-4">
-            5-Step Discovery Process
+
+      <main className="flex-1 pt-32 pb-24 px-4 relative overflow-hidden">
+        {/* Ambient Top Glow */}
+        <div className="absolute top-0 left-1/2 -translate-x-1/2 w-full max-w-4xl h-80 hero-glow pointer-events-none" />
+
+        <div className="max-w-3xl mx-auto text-center mb-10 relative z-10">
+          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-cyan-100/70 border border-cyan-300/60 text-cyan-900 text-xs font-bold mb-3 shadow-xs">
+            <Sparkles className="w-3.5 h-3.5 text-cyan-600" />
+            <span>Interactive Scoping Studio</span>
           </div>
-          <h1 className="text-3xl sm:text-4xl font-extrabold text-[#1a1a2e] mb-3">
-            Tell Us About Your Project
+
+          <h1 className="text-3xl sm:text-4xl font-extrabold text-slate-900 tracking-tight mb-3">
+            Intelligent Project Discovery
           </h1>
-          <p className="text-gray-500 leading-relaxed">
-            Answer a few simple questions and we&apos;ll match you with the right Cynbit service and
-            connect you with our team.
+          <p className="text-slate-600 text-xs sm:text-sm max-w-lg mx-auto leading-relaxed">
+            Answer a few key questions about your initiative. Our deterministic system will match your scope
+            with the optimal Cynbit technical discipline.
           </p>
         </div>
-        <DiscoveryForm />
+
+        <div className="relative z-10">
+          <DiscoveryForm />
+        </div>
       </main>
+
+      <Footer />
     </div>
   );
 }
-

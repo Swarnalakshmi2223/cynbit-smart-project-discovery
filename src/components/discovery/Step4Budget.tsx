@@ -1,6 +1,8 @@
-// src/components/discovery/Step4Budget.tsx
+'use client';
+
 import { DiscoveryFormData, BudgetRange, ExpectedTimeline } from '@/types';
 import { BUDGET_RANGES, EXPECTED_TIMELINES } from '@/constants';
+import { Coins, Calendar, Sparkles, Check, AlertCircle } from 'lucide-react';
 
 interface Props {
   data: DiscoveryFormData;
@@ -8,69 +10,107 @@ interface Props {
   errors: Record<string, string>;
 }
 
-function OptionButton({
-  selected, onClick, children,
-}: { selected: boolean; onClick: () => void; children: React.ReactNode }) {
-  return (
-    <button
-      type="button"
-      onClick={onClick}
-      className={`w-full text-left px-4 py-3 rounded-xl border-2 text-sm font-medium transition-all ${
-        selected
-          ? 'border-[#0ea5e9] bg-[#f0f9ff] text-[#0ea5e9]'
-          : 'border-gray-200 text-gray-700 hover:border-gray-300'
-      }`}
-    >
-      {children}
-    </button>
-  );
-}
-
 export default function Step4Budget({ data, onChange, errors }: Props) {
   return (
-    <div className="space-y-8">
-      {/* Budget */}
-      <div>
-        <label className="block text-sm font-semibold text-[#1a1a2e] mb-3">
-          Estimated Budget <span className="text-red-500">*</span>
-        </label>
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
-          {BUDGET_RANGES.map(range => (
-            <OptionButton
-              key={range}
-              selected={data.budgetRange === range}
-              onClick={() => onChange('budgetRange', range as BudgetRange)}
-            >
-              {range}
-            </OptionButton>
-          ))}
-        </div>
-        {errors.budgetRange && <p className="mt-2 text-xs text-red-600">{errors.budgetRange}</p>}
+    <div className="space-y-6">
+      <div className="mb-2">
+        <h3 className="text-lg font-bold text-slate-900">Commercial parameters & delivery timeline</h3>
+        <p className="text-xs text-slate-500 mt-0.5">
+          Select realistic brackets so we can suggest appropriate squad composition and sprint structures.
+        </p>
       </div>
 
-      {/* Timeline */}
+      {/* Budget Range Section */}
       <div>
-        <label className="block text-sm font-semibold text-[#1a1a2e] mb-3">
-          Expected Timeline <span className="text-red-500">*</span>
+        <label className="text-xs font-bold uppercase tracking-wider text-slate-700 mb-2.5 flex items-center gap-1.5">
+          <Coins className="w-3.5 h-3.5 text-slate-500" />
+          <span>Estimated Budget Allocation</span>
+          <span className="text-cyan-600">*</span>
         </label>
+
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
-          {EXPECTED_TIMELINES.map(timeline => (
-            <OptionButton
-              key={timeline}
-              selected={data.expectedTimeline === timeline}
-              onClick={() => onChange('expectedTimeline', timeline as ExpectedTimeline)}
-            >
-              {timeline}
-            </OptionButton>
-          ))}
+          {BUDGET_RANGES.map((range) => {
+            const isSelected = data.budgetRange === range;
+            return (
+              <button
+                key={range}
+                type="button"
+                onClick={() => onChange('budgetRange', range as BudgetRange)}
+                className={`p-3 rounded-xl text-left border transition-all text-xs font-semibold flex items-center justify-between ${
+                  isSelected
+                    ? 'border-cyan-500 bg-cyan-50/50 text-slate-900 ring-1 ring-cyan-500 shadow-sm'
+                    : 'border-slate-200 bg-white text-slate-700 hover:border-slate-300 hover:bg-slate-50/50'
+                }`}
+              >
+                <span>{range}</span>
+                <div
+                  className={`w-4 h-4 rounded-full border flex items-center justify-center ${
+                    isSelected ? 'border-cyan-600 bg-cyan-600 text-white' : 'border-slate-300'
+                  }`}
+                >
+                  {isSelected && <Check className="w-2.5 h-2.5 stroke-[3]" />}
+                </div>
+              </button>
+            );
+          })}
         </div>
-        {errors.expectedTimeline && <p className="mt-2 text-xs text-red-600">{errors.expectedTimeline}</p>}
+
+        {errors.budgetRange && (
+          <p className="mt-1.5 text-xs text-rose-600 flex items-center gap-1 font-medium">
+            <AlertCircle className="w-3 h-3" /> {errors.budgetRange}
+          </p>
+        )}
       </div>
 
-      <div className="bg-blue-50 border border-blue-100 rounded-xl p-4 text-sm text-blue-700">
-        💡 After this step, we&apos;ll show you a personalized service recommendation based on your selections.
+      {/* Timeline Section */}
+      <div>
+        <label className="text-xs font-bold uppercase tracking-wider text-slate-700 mb-2.5 flex items-center gap-1.5">
+          <Calendar className="w-3.5 h-3.5 text-slate-500" />
+          <span>Expected Delivery Timeline</span>
+          <span className="text-cyan-600">*</span>
+        </label>
+
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-2.5">
+          {EXPECTED_TIMELINES.map((time) => {
+            const isSelected = data.expectedTimeline === time;
+            return (
+              <button
+                key={time}
+                type="button"
+                onClick={() => onChange('expectedTimeline', time as ExpectedTimeline)}
+                className={`p-3 rounded-xl text-left border transition-all text-xs font-semibold flex items-center justify-between ${
+                  isSelected
+                    ? 'border-cyan-500 bg-cyan-50/50 text-slate-900 ring-1 ring-cyan-500 shadow-sm'
+                    : 'border-slate-200 bg-white text-slate-700 hover:border-slate-300 hover:bg-slate-50/50'
+                }`}
+              >
+                <span>{time}</span>
+                <div
+                  className={`w-4 h-4 rounded-full border flex items-center justify-center ${
+                    isSelected ? 'border-cyan-600 bg-cyan-600 text-white' : 'border-slate-300'
+                  }`}
+                >
+                  {isSelected && <Check className="w-2.5 h-2.5 stroke-[3]" />}
+                </div>
+              </button>
+            );
+          })}
+        </div>
+
+        {errors.expectedTimeline && (
+          <p className="mt-1.5 text-xs text-rose-600 flex items-center gap-1 font-medium">
+            <AlertCircle className="w-3 h-3" /> {errors.expectedTimeline}
+          </p>
+        )}
+      </div>
+
+      {/* Discovery engine notice */}
+      <div className="p-3.5 rounded-xl bg-gradient-to-r from-cyan-50 to-sky-50 border border-cyan-200/80 flex items-start gap-3">
+        <Sparkles className="w-4 h-4 text-cyan-600 flex-shrink-0 mt-0.5" />
+        <p className="text-xs text-slate-600 leading-relaxed font-medium">
+          Once you click <strong>Continue</strong>, our deterministic scoring engine will synthesize your requirements and reveal your tailored service diagnosis.
+        </p>
       </div>
     </div>
   );
 }
-

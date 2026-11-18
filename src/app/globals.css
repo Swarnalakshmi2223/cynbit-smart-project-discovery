@@ -1,49 +1,129 @@
 @import "tailwindcss";
 
-:root {
-  --navy: #1a1a2e;
-  --navy-dark: #0f0f1a;
-  --navy-mid: #16213e;
-  --blue-accent: #0ea5e9;
-  --blue-soft: #38bdf8;
+@layer theme {
+  :root {
+    --primary-navy: #0b0f19;
+    --navy-surface: #111827;
+    --navy-elevated: #1a2236;
+    --accent-cyan: #06b6d4;
+    --accent-blue: #3b82f6;
+    --accent-glow: rgba(6, 182, 212, 0.15);
+  }
 }
 
 * {
   box-sizing: border-box;
 }
 
-body {
-  background-color: #ffffff;
-  color: #1a1a2e;
-  font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
-  margin: 0;
-  padding: 0;
+html {
+  scroll-behavior: smooth;
+  color-scheme: light;
 }
 
-/* Custom scrollbar */
+body {
+  background-color: #f8fafc;
+  color: #0f172a;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  margin: 0;
+  padding: 0;
+  overflow-x: hidden;
+}
+
+/* Subtle background grid pattern for tech aesthetic */
+.bg-grid-pattern {
+  background-size: 32px 32px;
+  background-image: 
+    linear-gradient(to right, rgba(226, 232, 240, 0.6) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(226, 232, 240, 0.6) 1px, transparent 1px);
+}
+
+.dark-grid-pattern {
+  background-size: 36px 36px;
+  background-image: 
+    linear-gradient(to right, rgba(255, 255, 255, 0.04) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(255, 255, 255, 0.04) 1px, transparent 1px);
+}
+
+/* Ambient Radial Glow */
+.hero-glow {
+  background: radial-gradient(circle at 50% 0%, rgba(14, 165, 233, 0.18) 0%, rgba(99, 102, 241, 0.08) 35%, transparent 70%);
+}
+
+.hero-glow-dark {
+  background: radial-gradient(circle at 50% 20%, rgba(6, 182, 212, 0.22) 0%, rgba(59, 130, 246, 0.15) 30%, transparent 70%);
+}
+
+/* Glassmorphism */
+.glass-nav {
+  background: rgba(255, 255, 255, 0.85);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+}
+
+.glass-card {
+  background: rgba(255, 255, 255, 0.95);
+  backdrop-filter: blur(12px);
+  border: 1px solid rgba(226, 232, 240, 0.8);
+}
+
+.glass-card-dark {
+  background: rgba(17, 24, 39, 0.85);
+  backdrop-filter: blur(16px);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+/* Card hover animation */
+.card-hover {
+  transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+}
+.card-hover:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 16px 32px -8px rgba(15, 23, 42, 0.08), 0 4px 8px -2px rgba(15, 23, 42, 0.04);
+}
+
+/* Custom Scrollbar */
 ::-webkit-scrollbar {
   width: 6px;
+  height: 6px;
 }
 ::-webkit-scrollbar-track {
   background: #f1f5f9;
 }
 ::-webkit-scrollbar-thumb {
   background: #cbd5e1;
-  border-radius: 3px;
+  border-radius: 9999px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: #94a3b8;
 }
 
-/* Animations */
-@keyframes fadeIn {
-  from { opacity: 0; transform: translateY(6px); }
-  to { opacity: 1; transform: translateY(0); }
-}
-.animate-fadeIn {
-  animation: fadeIn 0.25s ease-out;
+/* Keyframes */
+@keyframes fadeInScale {
+  from {
+    opacity: 0;
+    transform: scale(0.98) translateY(6px);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
 }
 
-@keyframes spin {
-  to { transform: rotate(360deg); }
+.animate-enter {
+  animation: fadeInScale 0.3s cubic-bezier(0.16, 1, 0.3, 1) forwards;
 }
-.animate-spin {
-  animation: spin 1s linear infinite;
+
+@keyframes pulseGlow {
+  0%, 100% {
+    box-shadow: 0 0 15px rgba(14, 165, 233, 0.3);
+  }
+  50% {
+    box-shadow: 0 0 25px rgba(14, 165, 233, 0.6);
+  }
+}
+
+.glow-pulse {
+  animation: pulseGlow 3s infinite ease-in-out;
 }
