@@ -13,6 +13,7 @@
 | **Candidate Name** | Swarnalakshmi Perumal |
 | **Candidate Email** | `swarnalakshmip4@gmail.com` |
 | **Primary Repository** | [https://github.com/Swarnalakshmi2223/cynbit-smart-project-discovery.git](https://github.com/Swarnalakshmi2223/cynbit-smart-project-discovery.git) |
+| **Live Deployed Prototype** | [https://cynbit-smart-project-discovery.vercel.app/](https://cynbit-smart-project-discovery.vercel.app/) |
 | **Document Version** | 1.0.0 (Production Release) |
 | **Assessment Date** | November 19, 2026 |
 
@@ -21,7 +22,7 @@
 > [!IMPORTANT]
 > ### 🔑 Assessment Demonstration Credentials
 > To verify and inspect the live Administrative CRM, Analytics Dashboard, and Lead Pipeline:
-> - **Portal URL**: `/admin/login`
+> - **Live Admin Login**: **[`https://cynbit-smart-project-discovery.vercel.app/admin/login`](https://cynbit-smart-project-discovery.vercel.app/admin/login)**
 > - **Administrator Email**: `admin@cynbit.in`
 > - **Administrator Password**: `AdminSecure2026!`
 > - **Assigned Role**: `Superadmin`
