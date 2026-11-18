@@ -11,6 +11,7 @@
   "dependencies": {
     "bcryptjs": "^3.0.3",
     "clsx": "^2.1.1",
+    "dotenv": "^18.0.10",
     "jose": "^6.2.17",
     "lucide-react": "^1.75.0",
     "mongoose": "^9.12.2",
@@ -18,9 +19,11 @@
     "react": "19.3.0",
     "react-dom": "19.3.0",
     "resend": "^6.38.1",
+    "ts-node": "^10.9.2",
     "zod": "^4.6.7"
   },
   "devDependencies": {
+    "@tailwindcss/postcss": "^4.3.5",
     "@tailwindcss/turbopack": "4.3.3",
     "@types/jest": "^30.0.0",
     "@types/node": "^20",
@@ -29,6 +32,7 @@
     "eslint": "^9",
     "eslint-config-next": "16.4.6",
     "jest": "^30.5.2",
+    "postcss": "^8.5.33",
     "tailwindcss": "4.3.3",
     "ts-jest": "^29.4.15",
     "typescript": "^5"
