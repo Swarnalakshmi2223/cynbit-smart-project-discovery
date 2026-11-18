@@ -13,8 +13,8 @@ const GOAL_META: Record<
 > = {
   'Build a new web application': {
     icon: Globe,
-    badge: 'Frontend & Full-Stack',
-    desc: 'Modern responsive web platforms, portals, and SaaS software.',
+    badge: 'Web & Full-Stack',
+    desc: 'Modern responsive web platforms, portals, and SaaS applications.',
   },
   'Develop a mobile application': {
     icon: Smartphone,
@@ -23,23 +23,23 @@ const GOAL_META: Record<
   },
   'Automate business operations using AI': {
     icon: Bot,
-    badge: 'Intelligent Workflows',
-    desc: 'Automate high-friction back-office pipelines with AI workflows.',
+    badge: 'Cognitive Workflows',
+    desc: 'Automate high-friction back-office pipelines with multi-agent AI.',
   },
   'Develop an AI-powered solution': {
     icon: Cpu,
     badge: 'Custom Machine Learning',
-    desc: 'Integrate LLMs, computer vision, or predictive data algorithms.',
+    desc: 'Integrate LLMs, computer vision, or predictive data models.',
   },
   'Migrate or improve cloud infrastructure': {
     icon: Cloud,
     badge: 'Cloud & DevOps',
-    desc: 'AWS, Azure, containerization, and high-availability architecture.',
+    desc: 'AWS, Azure, containerization, and zero-downtime architecture.',
   },
   'Improve website performance and SEO': {
     icon: TrendingUp,
     badge: 'Growth & Vitals',
-    desc: 'Accelerate Core Web Vitals, organic search ranks, and UX speed.',
+    desc: 'Accelerate Core Web Vitals, organic search ranks, and speed.',
   },
   'Develop custom enterprise software': {
     icon: Building2,
@@ -48,8 +48,8 @@ const GOAL_META: Record<
   },
   'Other': {
     icon: HelpCircle,
-    badge: 'Advisory Consultation',
-    desc: 'Technical consultation, architecture reviews, or specialized scope.',
+    badge: 'Specialized Scope',
+    desc: 'Technical consultation, architecture reviews, or custom engagement.',
   },
 };
 
@@ -63,9 +63,9 @@ export default function Step1Goal({ value, onChange, error }: Props) {
   return (
     <div className="space-y-4">
       <div className="mb-4">
-        <h3 className="text-lg font-bold text-slate-900">What are you looking to achieve?</h3>
-        <p className="text-xs text-slate-500 mt-0.5">
-          Choose the primary objective that aligns closest with your project vision.
+        <h3 className="text-lg font-bold text-white tracking-tight">What are you looking to achieve?</h3>
+        <p className="text-xs text-slate-400 mt-0.5">
+          Choose the primary objective that aligns closest with your initiative.
         </p>
       </div>
 
@@ -82,8 +82,8 @@ export default function Step1Goal({ value, onChange, error }: Props) {
               onClick={() => onChange(goal)}
               className={`group relative text-left p-4 rounded-xl border transition-all duration-200 flex flex-col justify-between ${
                 isSelected
-                  ? 'border-cyan-500 bg-cyan-50/40 shadow-sm ring-1 ring-cyan-500'
-                  : 'border-slate-200 bg-white hover:border-slate-300 hover:bg-slate-50/50'
+                  ? 'border-cyan-500 bg-cyan-950/40 shadow-lg shadow-cyan-950/50 ring-1 ring-cyan-500'
+                  : 'border-slate-800 bg-slate-950/60 hover:border-slate-700 hover:bg-slate-900/60'
               }`}
             >
               <div>
@@ -91,44 +91,44 @@ export default function Step1Goal({ value, onChange, error }: Props) {
                   <div
                     className={`w-9 h-9 rounded-lg flex items-center justify-center transition-colors ${
                       isSelected
-                        ? 'bg-slate-900 text-cyan-400'
-                        : 'bg-slate-100 text-slate-600 group-hover:bg-slate-200/80'
+                        ? 'bg-cyan-500 text-slate-950 font-black'
+                        : 'bg-slate-900 text-slate-400 group-hover:text-cyan-400 border border-slate-800'
                     }`}
                   >
-                    <Icon className="w-5 h-5" />
+                    <Icon className="w-4 h-4" />
                   </div>
                   <span
-                    className={`text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-full ${
+                    className={`text-[10px] font-mono font-bold uppercase tracking-wider px-2 py-0.5 rounded-full ${
                       isSelected
-                        ? 'bg-cyan-100/80 text-cyan-800'
-                        : 'bg-slate-100 text-slate-500'
+                        ? 'bg-cyan-500/20 text-cyan-300 border border-cyan-500/40'
+                        : 'bg-slate-900 text-slate-500 border border-slate-800'
                     }`}
                   >
                     {meta.badge}
                   </span>
                 </div>
 
-                <div className="font-bold text-sm text-slate-900 mb-1 leading-snug">
+                <div className="font-bold text-sm text-white mb-1 leading-snug">
                   {goal}
                 </div>
-                <p className="text-xs text-slate-500 leading-relaxed font-normal">
+                <p className="text-xs text-slate-400 leading-relaxed font-normal">
                   {meta.desc}
                 </p>
               </div>
 
               {/* Selection Indicator */}
-              <div className="mt-3 pt-2.5 border-t border-slate-100/80 flex items-center justify-between text-[11px] font-semibold">
-                <span className={isSelected ? 'text-cyan-700' : 'text-slate-400'}>
-                  {isSelected ? 'Selected' : 'Select this goal'}
+              <div className="mt-3 pt-2.5 border-t border-slate-900 flex items-center justify-between text-[11px] font-semibold">
+                <span className={isSelected ? 'text-cyan-400 font-mono font-bold' : 'text-slate-500'}>
+                  {isSelected ? 'Selected Target' : 'Select Goal'}
                 </span>
                 <div
                   className={`w-4 h-4 rounded-full border flex items-center justify-center transition-all ${
                     isSelected
-                      ? 'border-cyan-500 bg-cyan-500 text-white'
-                      : 'border-slate-300'
+                      ? 'border-cyan-500 bg-cyan-500 text-slate-950'
+                      : 'border-slate-700 bg-slate-950'
                   }`}
                 >
-                  {isSelected && <div className="w-1.5 h-1.5 rounded-full bg-white" />}
+                  {isSelected && <div className="w-1.5 h-1.5 rounded-full bg-slate-950" />}
                 </div>
               </div>
             </button>
@@ -137,7 +137,7 @@ export default function Step1Goal({ value, onChange, error }: Props) {
       </div>
 
       {error && (
-        <p className="text-xs font-semibold text-rose-600 bg-rose-50 px-3 py-2 rounded-lg border border-rose-200 mt-2">
+        <p className="text-xs font-semibold text-rose-300 bg-rose-950/40 px-3 py-2 rounded-lg border border-rose-800 mt-2">
           {error}
         </p>
       )}

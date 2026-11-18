@@ -167,17 +167,17 @@ export default function DiscoveryForm() {
       )}
 
       {/* Main Glass Form Card */}
-      <div className="bg-white rounded-2xl border border-slate-200/90 shadow-xl p-6 sm:p-9 relative">
+      <div className="bg-slate-900/90 backdrop-blur-xl rounded-2xl border border-slate-800 shadow-2xl p-6 sm:p-9 relative before:absolute before:inset-x-0 before:top-0 before:h-[2px] before:bg-gradient-to-r before:from-transparent before:via-cyan-400 before:to-transparent before:rounded-t-2xl">
         {/* Recommendation Reveal Screen */}
         {showRecommendation && recommendation ? (
           <div className="space-y-6">
             <RecommendationCard recommendation={recommendation} />
 
-            <div className="flex items-center justify-between pt-6 border-t border-slate-100">
+            <div className="flex items-center justify-between pt-6 border-t border-slate-800">
               <button
                 type="button"
                 onClick={handleBack}
-                className="px-5 py-2.5 rounded-xl border border-slate-200 text-xs font-semibold text-slate-700 hover:bg-slate-50 transition-colors flex items-center gap-1.5"
+                className="px-5 py-2.5 rounded-xl border border-slate-800 bg-slate-950 text-xs font-semibold text-slate-300 hover:text-white hover:bg-slate-800 transition-colors flex items-center gap-1.5"
               >
                 <ArrowLeft className="w-4 h-4" />
                 <span>Adjust Parameters</span>
@@ -189,10 +189,10 @@ export default function DiscoveryForm() {
                   setShowRecommendation(false);
                   setStep(5);
                 }}
-                className="px-6 py-2.5 rounded-xl bg-slate-900 hover:bg-slate-800 text-white text-xs font-bold transition-all shadow-md flex items-center gap-2"
+                className="px-6 py-2.5 rounded-xl bg-gradient-to-r from-cyan-400 to-sky-400 hover:opacity-95 text-slate-950 text-xs font-extrabold transition-all shadow-lg shadow-cyan-500/25 flex items-center gap-2"
               >
                 <span>Continue to Contact Dossier</span>
-                <ArrowRight className="w-4 h-4 text-cyan-400" />
+                <ArrowRight className="w-4 h-4 text-slate-950" />
               </button>
             </div>
           </div>
@@ -221,19 +221,19 @@ export default function DiscoveryForm() {
 
             {/* Error Banner */}
             {submitError && (
-              <div className="p-3.5 rounded-xl bg-rose-50 border border-rose-200 text-rose-700 text-xs flex items-start gap-2 font-medium">
-                <AlertCircle className="w-4 h-4 text-rose-600 flex-shrink-0 mt-0.5" />
+              <div className="p-3.5 rounded-xl bg-rose-950/40 border border-rose-800 text-rose-300 text-xs flex items-start gap-2 font-medium">
+                <AlertCircle className="w-4 h-4 text-rose-400 flex-shrink-0 mt-0.5" />
                 <span>{submitError}</span>
               </div>
             )}
 
             {/* Bottom Actions */}
-            <div className="flex items-center justify-between pt-6 border-t border-slate-100">
+            <div className="flex items-center justify-between pt-6 border-t border-slate-800">
               <button
                 type="button"
                 onClick={handleBack}
                 disabled={step === 1}
-                className="px-5 py-2.5 rounded-xl border border-slate-200 text-xs font-semibold text-slate-700 hover:bg-slate-50 transition-colors disabled:opacity-30 disabled:cursor-not-allowed flex items-center gap-1.5"
+                className="px-5 py-2.5 rounded-xl border border-slate-800 bg-slate-950 text-xs font-semibold text-slate-400 hover:text-white hover:bg-slate-800 transition-colors disabled:opacity-20 disabled:cursor-not-allowed flex items-center gap-1.5"
               >
                 <ArrowLeft className="w-4 h-4" />
                 <span>Previous</span>
@@ -243,17 +243,17 @@ export default function DiscoveryForm() {
                 <button
                   type="button"
                   onClick={handleNext}
-                  className="px-6 py-2.5 rounded-xl bg-slate-900 hover:bg-slate-800 text-white text-xs font-bold transition-all shadow-md flex items-center gap-2 group"
+                  className="px-6 py-2.5 rounded-xl bg-cyan-400 hover:bg-cyan-300 text-slate-950 text-xs font-extrabold transition-all shadow-md shadow-cyan-500/20 flex items-center gap-2 group"
                 >
                   <span>Continue</span>
-                  <ArrowRight className="w-4 h-4 text-cyan-400 group-hover:translate-x-0.5 transition-transform" />
+                  <ArrowRight className="w-4 h-4 text-slate-950 group-hover:translate-x-0.5 transition-transform" />
                 </button>
               ) : (
                 <button
                   type="button"
                   onClick={handleSubmit}
                   disabled={submitting}
-                  className="px-7 py-3 rounded-xl bg-gradient-to-r from-cyan-500 to-sky-600 hover:from-cyan-400 hover:to-sky-500 text-slate-950 font-bold text-xs shadow-lg shadow-cyan-500/20 transition-all flex items-center gap-2 disabled:opacity-60 disabled:cursor-not-allowed"
+                  className="px-7 py-3 rounded-xl bg-gradient-to-r from-cyan-400 via-sky-300 to-cyan-400 hover:opacity-95 text-slate-950 font-black text-xs shadow-xl shadow-cyan-500/30 transition-all flex items-center gap-2 disabled:opacity-60 disabled:cursor-not-allowed"
                 >
                   {submitting ? (
                     <>
@@ -275,8 +275,8 @@ export default function DiscoveryForm() {
       </div>
 
       {/* Security note footer */}
-      <div className="mt-6 flex items-center justify-center gap-2 text-[11px] text-slate-400">
-        <ShieldCheck className="w-3.5 h-3.5 text-slate-400" />
+      <div className="mt-6 flex items-center justify-center gap-2 text-[11px] text-slate-500 font-mono">
+        <ShieldCheck className="w-3.5 h-3.5 text-cyan-400" />
         <span>256-bit encrypted submission • Strict confidentiality guaranteed</span>
       </div>
     </div>
